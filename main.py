@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
 import httpx
 
 app = FastAPI(title="High Performance API Gateway")
@@ -16,7 +16,7 @@ async def health_check():
 @app.api_route("/{service}/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 async def gateway(service: str, path: str, request: Request):
     if service not in SERVICES:
-        return {"error": "Unknown service"}, 404
+        raise HTTPException(status_code=404, detail="Unknown service")
 
     url = f"{SERVICES[service]}/{path}"
     async with httpx.AsyncClient() as client:
